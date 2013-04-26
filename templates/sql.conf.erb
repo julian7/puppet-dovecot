@@ -1,0 +1,14 @@
+driver = <%= @dbdriver %>
+connect = host=<%= @dbhost %> dbname=<%= @dbname %> user=<%= @dbuser %> password=<%= @dbpass %>
+default_pass_scheme = <%= @pass_scheme %>
+
+password_query = \
+  SELECT \
+    <%= @users_table %>.<%= @users_user %> AS username, \
+    <%= @users_table %>.<%= @users_domain %> AS domain, \
+    <%= @users_table %>.<%= @users_password %> AS password \
+  FROM <%= @users_table %>, <%= @domains_table %> \
+ WHERE <%= @domains_table %>.<%= @domains_domain %> = '%d' \
+   AND <%= @users_table %>.<%= @users_domain %> = '%d' \
+   AND <%= @users_table %>.<%= @users_user %> = '%n' \
+   AND <%= @domains_table %>.<%= @domains_services %> LIKE '%%:%Ls%Lc:%%'
