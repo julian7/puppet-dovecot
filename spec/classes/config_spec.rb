@@ -39,7 +39,7 @@ describe 'dovecot::config' do
     it 'creates dovecot.conf with SQL auth' do
       should contain_file('/etc/dovecot/dovecot.conf').
         with_content(%r{^passdb \{\s+driver = sql\s+args = /etc/dovecot/dovecot-sql.conf\s+\}}m).
-        with_content(%r{^userdb \{\s+driver = static\s+args = uid=100 gid=200 home=/virtual/home/dir/%d/%u/\s+\}}m)
+        with_content(%r{^userdb \{\s+driver = static\s+args = uid=100 gid=200 home=/virtual/home/dir mail=maildir:~/%d/%n/ allow_all_users=yes\s+\}}m)
     end
 
     it 'creates dovecot-sql.conf' do
@@ -80,11 +80,16 @@ EnD
   end
 
   context 'SASL provider setup' do
-    let(:params) {{sasl: true}}
+    let(:params) {{sasl: true, virtual_user: 'virtuser', virtual_group: 'virtgroup'}}
     it 'creates dovecot.conf with SASL service for Postfix' do
       should contain_file('/etc/dovecot/dovecot.conf').
         with_content(
           %r{^service\sauth\s\{\s+
+            unix_listener\sauth-userdb\s\{\s+
+              group\s+=\s+virtgroup\s+
+              mode\s+=\s+0660\s+
+              user\s+=\s+virtuser\s+
+            \}\s+
             unix_listener\s/var/spool/postfix/private/auth\s\{\s+
               group\s+=\s+postfix\s+
               mode\s+=\s+0660\s+
@@ -100,7 +105,7 @@ EnD
     it 'creates dovecot.conf with SSL setup' do
       should contain_file('/etc/dovecot/dovecot.conf').
         with_content(%r{^ssl_cert = </etc/ssl/certs/dovecot.pem$}).
-        with_content(%r{^ssl_key = </etc/ssl/private/dovecot.pem$})
+        with_content(%r{^ssl_key = </etc/ssl/private/dovecot.key$})
     end
   end
 end

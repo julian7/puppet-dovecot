@@ -1,6 +1,7 @@
 log_timestamp = "%Y-%m-%d %H:%M:%S "
 mail_max_userip_connections = 40
 mail_privileged_group = mail
+first_valid_uid = <%= @virtual_uid %>
 <%- if @sql -%>
 # Auth from SQL
 passdb {
@@ -9,7 +10,7 @@ passdb {
 }
 userdb {
   driver = static
-  args = uid=<%= @virtual_uid %> gid=<%= @virtual_gid %> home=<%= @virtual_homes %>/%d/%u/
+  args = uid=<%= @virtual_uid %> gid=<%= @virtual_gid %> home=<%= @virtual_homes %> mail=maildir:~/%d/%n/ allow_all_users=yes
 }
 <%- end -%>
 <%- if @pam -%>
@@ -25,6 +26,11 @@ protocols = imap pop3
 <%- if @sasl -%>
 # SASL service for Postfix
 service auth {
+  unix_listener auth-userdb {
+    group = <%= @virtual_group %>
+    mode = 0660
+    user = <%= @virtual_user %>
+  }
   unix_listener /var/spool/postfix/private/auth {
     group = postfix
     mode = 0660
@@ -36,5 +42,5 @@ service auth {
 <%- if @ssl -%>
 # SSL setup
 ssl_cert = </etc/ssl/certs/<%= @ssl %>.pem
-ssl_key = </etc/ssl/private/<%= @ssl %>.pem
+ssl_key = </etc/ssl/private/<%= @ssl %>.key
 <%- end -%>

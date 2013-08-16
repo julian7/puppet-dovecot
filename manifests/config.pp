@@ -11,6 +11,8 @@ class dovecot::config(
   $dbpass = undef,
   $pass_scheme = 'SHA512-CRYPT',
   $virtual_homes = undef,
+  $virtual_user = undef,
+  $virtual_group = undef,
   $virtual_uid = undef,
   $virtual_gid = undef,
   $users_table = 'users',
@@ -30,11 +32,11 @@ class dovecot::config(
   }
 
   $confd = '/etc/dovecot'
-  if $sql {
-    $sqlensure = $ensure
-  } else {
-    $sqlensure = 'absent'
+  $sqlensure = $sql ? {
+    true    => $ensure,
+    default => 'absent'
   }
+
   file {
     $confd:
       mode    => '0755',
@@ -47,7 +49,7 @@ class dovecot::config(
       content => template('dovecot/dovecot.conf.erb')
       ;
     "${confd}/dovecot-sql.conf":
-      ensure  => $sqlreq,
+      ensure  => $sqlensure,
       mode    => '0640',
       content => template('dovecot/sql.conf.erb')
   }
