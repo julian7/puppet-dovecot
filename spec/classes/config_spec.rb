@@ -108,4 +108,16 @@ EnD
         with_content(%r{^ssl_key = </etc/ssl/private/dovecot.key$})
     end
   end
+
+  context 'Homes on NFS setup' do
+    let(:params) {{homes_on_nfs: true}}
+    it 'sets up conservative NFS setup' do
+      should contain_file('/etc/dovecot/dovecot.conf').
+        with_content(%r{^mmap_disable = yes$}).
+        with_content(%r{^lock_method = dotlock$}).
+        with_content(%r{^mail_fsync = always$}).
+        with_content(%r{^mail_nfs_storage = yes$}).
+        with_content(%r{^mail_nfs_index = yes$})
+    end
+  end
 end

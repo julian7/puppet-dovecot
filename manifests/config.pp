@@ -10,6 +10,7 @@ class dovecot::config(
   $dbuser = 'dbuser',
   $dbpass = undef,
   $pass_scheme = 'SHA512-CRYPT',
+  $homes_on_nfs = false,
   $virtual_homes = undef,
   $virtual_user = undef,
   $virtual_group = undef,
