@@ -42,7 +42,6 @@ service auth {
 <%- end -%>
 <%- if @ssl -%>
 # SSL setup
-<%- if @ca %>ssl_ca = </etc/ssl/certs/<%= @ssl %>-ca.pem<% end -%>
 ssl_cert = </etc/ssl/certs/<%= @ssl %>.pem
 ssl_key = </etc/ssl/private/<%= @ssl %>.key
 <%- end -%>

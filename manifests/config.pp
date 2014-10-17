@@ -3,7 +3,6 @@ class dovecot::config(
   $pam = false,
   $sasl = false,
   $ssl = undef,
-  $ca = false,
   $sql = false,
   $dbdriver = 'mysql',
   $dbhost = 'localhost',
